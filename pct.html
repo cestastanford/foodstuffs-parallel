@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <title>Foodstuffs</title>
+    <link rel="stylesheet" type="text/css" href="parallel.css" />
+    <link href='http://fonts.googleapis.com/css?family=Lato:300,400' rel='stylesheet' type='text/css'>
+</head>
+<body>
+
+  <div id="header">
+
+    <h1>Königsberg Foodstuffs Database</h1>
+
+    <div class="controls">
+      <strong id="rendered-count"></strong>/<strong id="selected-count"></strong><!--<strong id="data-count"></strong>-->
+      <div class="fillbar"><div id="selected-bar"><div id="rendered-bar">&nbsp;</div></div></div>
+
+      <!--
+      <span class="settings">
+        <button id="hide-ticks">Hide Ticks</button>
+        <button id="show-ticks" disabled="disabled">Show Ticks</button>
+      </span>
+      -->
+
+    </div>
+
+    <div style="clear:both;"></div>
+
+  </div>
+
+  <div id="chart">
+    <canvas id="background"></canvas>
+    <canvas id="foreground"></canvas>
+    <canvas id="highlight"></canvas>
+    <svg></svg>
+  </div>
+
+  <div id="wrap">
+    <div class="third">
+      <h3>Food Subcategories</h3>
+      <p id="subcategories">
+      </p>
+    </div>
+    <div  class="third">
+      <h3>Food Macro-Categories</h3>
+      <p id="legend">
+      </p>
+    </div>
+    <div class="third">
+      <h3>Random sample <input type="text" id="search" placeholder="Search Foods..."></input></h3>
+      <p id="food-list">
+      </p>
+    </div>
+    <div class="third" id="controls">
+      <div class="bright">
+        <h3>Kitchen Records of the Königsberg Palace</h3>
+        <p>
+          A multidimensional explorer of <a href="all_foods.csv">Prussian foodstuffs</a>.
+          The parallel coordinates displays the amount of food in the database
+          between 1641 and 1688, colored by food category.
+          <a href="http://eagereyes.org/techniques/parallel-coordinates#brushing">Brush</a> the visualization to update other charts on this page.
+        </p>
+      </div>
+
+      <div class="little-box">
+        <h3>Controls</h3>
+        <p>
+          <em>Brush:</em> Drag vertically along an axis.<br/>
+          <em>Remove Brush:</em> Tap the axis background.<br/>
+        </p>
+      </div>
+      <div class="little-box">
+        <h3>Credits</h3>
+        <p>
+          Adapted from
+          <a href="http://bl.ocks.org/1341021">Mike Bostock</a>,<br/> <a
+          href="http://bl.ocks.org/1341281">Jason Davies</a>, and <a
+          href="http://bl.ocks.org/syntagmatic/raw/3150059/">Kai Chang</a>.<br/>
+        </p>
+        <p>
+          <br/>
+          Created by Molly Taylor-Poleskey <br/>
+          and <a href="http://jasonheppler.org">Jason A. Heppler</a> <br/>
+          Stanford University<br/>
+        </p>
+      </p>
+    </div>
+  </div>
+    <div id="foods_table"></div>
+  </div>
+
+  </body>
+  <script src="d3.js" charset="utf-8"></script>
+  <script src="http://documentcloud.github.com/underscore/underscore.js"></script>
+  <script src="pct.js"></script>
+  <script src="underscore.js"></script>
+  <!-- // <script src="node_modules/underscore.normalize/underscore.normalize.js"></script> -->
+</html>
