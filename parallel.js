@@ -28,12 +28,34 @@ var tooltip = d3.select("body").append("div")
   .classed("hidden", true);
 
 var colors = {
-  "Dairy": [27,158,119],                     // macro
-  "Grain": [217,95,2],                  // macro
-  "Meat": [117,112,179],                   // macro
-  "Flavoring/Other": [231,41,138],       // macro
-  "Fruits and Vegetables": [102,166,30]  // macro
+  "Dairy": [27,158,119],
+  "Grain": [217,95,2],
+  "Meat": [117,112,179],
+  "Flavoring/Other": [231,41,138],
+  "Fruits and Vegetables": [102,166,30]
 };
+
+var subcolors = {
+  "Acid": [231,41,138],
+  "Cooking oil": [231,41,138],
+  "Dairy": [27,158,119],
+  "Eggs": [117,112,179],
+  "Fish": [117,112,179],
+  "Fruit": [102,166,30],
+  "Grain": [217,95,2],
+  "Honey": [231,41,138],
+  "Meat": [117,112,179],
+  "Nuts": [102,166,30],
+  "nuts": [102,166,30],
+  "Olives": [102,166,30],
+  "Salt": [231,41,138],
+  "Seafood": [117,112,179],
+  "Seasoning": [102,166,30],
+  "Seeds": [102,166,30],
+  "Spice": [231,41,138],
+  "Sugar": [231,41,138],
+  "Vegetable": [102,166,30]
+}
 
 // Scale chart and canvas height
 d3.select("#chart")
@@ -62,7 +84,7 @@ background.strokeStyle = "rgba(0,100,160,0.1)";
 background.lineWidth = 1.7;
 
 // SVG for ticks, labels, and interactions
-var svg = d3.select("body").append("svg")
+var svg = d3.select("svg")
     .attr("width", w + m[1] + m[3])
     .attr("height", h + m[0] + m[2])
   .append("g")
@@ -127,7 +149,7 @@ d3.csv("food.zscore.csv", function(raw_data) {
 
 
   legend = create_legend(colors,brush);
-  subcategories = create_subcategories(colors, brush);
+  subcategories = create_subcategories(subcolors, brush);
 
   brush();
 
@@ -202,12 +224,12 @@ function create_legend(colors,brush) {
   return legend;
 }
 
-function create_subcategories(colors,brush) {
+function create_subcategories(subcolors,brush) {
   // create legend
   var categories_data = d3.select("#subcategories")
   .html("")
   .selectAll(".row")
-  .data( _.keys(colors).sort() )
+  .data( _.keys(subcolors).sort() )
 
   // filter by group
   var subcategorylegend = categories_data
@@ -228,7 +250,7 @@ function create_subcategories(colors,brush) {
 
   subcategorylegend
   .append("span")
-  .style("background", function(d,i) { return color(d,0.85)})
+  .style("background", function(d,i) { return colorsub(d,0.85)})
   .attr("class", "color-bar");
 
   subcategorylegend
@@ -310,8 +332,8 @@ function highlight(d) {
   d3.select("#foreground").style("opacity", "0.25");
   d3.selectAll(".row").style("opacity", function(p) { return (d.macrocategory == p) ? null : "0.3" });
   path(d, highlighted, color(d.macrocategory,1));
-  d3.selectAll(".row").style("opacity", function(p) { return (d.subcategory == p) ? null : "0.3" });
-  path(d, highlighted, color(d.subcategory,1));
+  d3.selectAll(".row").style("opacity", function(p) { return (d.category == p) ? null : "0.3" });
+  path(d, highlighted, color(d.category,1));
 }
 
 // Remove highlight
@@ -384,6 +406,14 @@ function path(d, ctx, color) {
 
 function color(d,a) {
   var c = colors[d];
+  //console.log("hsla("+c[0]+","+c[1]+"%,"+c[2]+"%,"+a+")");
+  //console.log(["hsla(",c[0],",",c[1],"%,",c[2],"%,",a,")"].join(""));
+  //return ["hsla(",c[0],",",c[1],"%,",c[2],"%,",a,")"].join("");
+  return ["rgba(",c[0],",",c[1],",",c[2],",",a,")"].join("");
+}
+
+function colorsub(d,a) {
+  var c = subcolors[d];
   //console.log("hsla("+c[0]+","+c[1]+"%,"+c[2]+"%,"+a+")");
   //console.log(["hsla(",c[0],",",c[1],"%,",c[2],"%,",a,")"].join(""));
   //return ["hsla(",c[0],",",c[1],"%,",c[2],"%,",a,")"].join("");
@@ -467,16 +497,13 @@ function brush() {
     .groupBy(function(d) { return d.macrocategory; })
 
   var subcategoryTallies = _(selected)
-    .groupBy(function(d) { return d.subcategory; })
-
-  //console.log(subcategoryTallies);
+    .groupBy(function(d) { return d.category; })
 
   // include empty groups
   _(colors).each(function(v,k) { tallies[k] = tallies[k] || []; });
-  _(colors).each(function(v,k) { subcategoryTallies[k] = subcategoryTallies[k] || []; });
+  _(subcolors).each(function(v,k) { subcategoryTallies[k] = subcategoryTallies[k] || []; });
 
   legend
-    .style("text-decoration", function(d) { return _.contains(excluded_groups,d) ? "line-through" : null; })
     .attr("class", function(d) {
       return (tallies[d].length > 0)
            ? "row"
@@ -485,14 +512,13 @@ function brush() {
 
   legend.selectAll(".color-bar")
     .style("width", function(d) {
-      return Math.ceil(600*tallies[d].length/data.length) + "px"
+      return Math.ceil(400 * tallies[d].length / data.length) + "px"
     });
 
   legend.selectAll(".tally")
     .text(function(d,i) { return tallies[d].length });
 
   subcategories
-    .style("text-decoration", function(d) { return _.contains(excluded_groups,d) ? "line-through" : null; })
     .attr("class", function(d) {
       return (subcategoryTallies[d].length > 0)
       ? "row"
@@ -560,7 +586,7 @@ function update_ticks(d, extent) {
 
   brush_count++;
 
-  show_ticks();
+//  show_ticks();
 
   // update axes
   d3.selectAll(".axis")
@@ -619,7 +645,7 @@ function actives() {
       return !_.contains(excluded_groups, d.macrocategory);
     })
     .filter(function(d) {
-      return !_.contains(excluded_groups, d.subcategory);
+      return !_.contains(excluded_groups, d.category);
     })
     .map(function(d) {
     return actives.every(function(p, i) {
@@ -765,7 +791,7 @@ function tooltipText(d) {
     zScore        = val.zscore;
     foodValue     = val.value;
     category      = val.category;
-    subcategory   = val.subcategory;
+    subcategory   = val.category;
     macrocategory = val.macrocategory;
   }
 
